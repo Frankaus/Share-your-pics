@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+    <title>Imageboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css2?family=Hanalei&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="main">
+        
+        <h1>IMAGEBOARD</h1>
+        
+        <div class="upload-container">
+            <input v-model="title" type="text" name="title" placeholder="Title">
+            <input v-model="description" type="text" name="description" placeholder="Description">
+            <input v-model="username" type="text" name="username" placeholder="Username">
+            <input @change="fileSelectHandler" type="file" name="file" accept="image/*">
+            <button @click.prevent="clickHandler">Upload</button>
+        </div>
+
+        <div class="image-container">
+            <div class="imageDisplay" v-for='data in images' :key="data.id">
+                <a :href="'#' + data.id">
+                <img :src="data.url" :alt="data.description">
+                <p>{{data.title}}</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="moreBtn">
+            <button @click="getMoreImages" v-if="moreBtn">More</button>
+        </div>
+
+        <div class="overlay" v-if="idMain"></div>
+
+        <component-snippet 
+        v-if="idMain"
+        :id="idMain"
+        @close="idMain=null"
+        >
+        </component-snippet>
+
+    </div>
+
+    <script type="text/x-template" id="image-snippet">
+        <div class="snippet grid-col">
+            <div class="pic">
+                <img :src="url">
+                <div class="pic-data">
+                    <h3>{{title}}</h3>
+                    <p>{{description}}</p>
+                    <span> <i> Uploaded by {{username}} on {{new Date(createdAt).toLocaleDateString('en-GB')}} at {{new Date(createdAt).toLocaleTimeString('en-GB')}} </i></span>
+                    <p id="close" @click="closeSnippet">Close</p>
+                </div>
+            </div>
+            
+                <component-comments
+                :id="id"
+                >
+                </component-comments>
+            
+        </div>
+    </script>
+
+    <script type="text/x-template" id="comments">
+        <div>
+            <h2>Add a comment</h2>
+                <div class="comment-field">
+                    <label for="comment">Comment: </label>
+                    <input v-model="comment" type="text" name="comment">
+                    <label for="username">Username: </label>
+                    <input v-model="username" type="text" name="username">
+                    <button @click="postComment">Submit</button>
+                    <p v-if="error" style="font-family: lato">You must not leave any field empty</p>
+                </div>
+                <div class="comments-list" v-for="comment in comments">
+                    <p>{{comment.text}}</p>
+                    <p><i>Written by {{comment.username}} on the {{new Date(comment.created_at).toLocaleDateString('en-GB')}} at {{new Date(comment.created_at).toLocaleTimeString('en-GB')}}</i></p>
+                </div>
+        </div>
+    </script>
+
+    <script src="/js/vue.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <script src="/js/script.js"></script>
+
+</body>
+</html>
